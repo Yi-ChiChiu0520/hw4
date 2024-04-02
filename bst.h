@@ -199,10 +199,10 @@ public:
     virtual void remove(const Key& key); //TODO
     void clear(); //TODO
     // helper clear function
-    void clearNode(Node<Key, Value>* node);
+    void clearHelper(Node<Key, Value>* node);
     bool isBalanced() const; //TODO
     // helper balance function
-    int checkBalance(Node<Key, Value>* node) const;
+    int balanceHelper(Node<Key, Value>* node) const;
     void print() const;
     bool empty() const;
     
@@ -466,21 +466,26 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
     // TODO
     Node<Key, Value>* parent = nullptr;
     Node<Key, Value>* current = root_;
-    // Find the correct spot for the new node
+
+    // find spot for insertion
     while (current != nullptr) {
         parent = current;
         if (keyValuePair.first < current->getKey()) {
+            // traverse left subtree if less
             current = current->getLeft();
         } else if (keyValuePair.first > current->getKey()) {
+            // traverse right subtree if more
             current = current->getRight();
-        } else { // Key exists, update value
+        } else { 
+            // if key found, update
             current->setValue(keyValuePair.second);
             return;
         }
     }
-    // Create and insert the new node
+    // create and insert node
     Node<Key, Value>* newNode = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, parent);
-    if (parent == nullptr) { // Tree was empty
+    if (parent == nullptr) { 
+        // if tree is empty
         root_ = newNode;
     } else if (keyValuePair.first < parent->getKey()) {
         parent->setLeft(newNode);
@@ -500,16 +505,21 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 {
     // TODO
     Node<Key, Value>* node = internalFind(key);
-    if (!node) return; // Key not found
+    if (!node) return; // return if key not found
 
-    // Node has two children
+    // if node has two children, swap
     if (node->getLeft() != nullptr && node->getRight() != nullptr) {
         Node<Key, Value>* pred = predecessor(node);
         nodeSwap(node, pred);
     }
 
-    // Node has 0 or 1 child
-    Node<Key, Value>* child = (node->getLeft() != nullptr) ? node->getLeft() : node->getRight();
+    // if node has zero or one children, swap
+    Node<Key, Value>* child;
+    if (node->getLeft() != nullptr) {
+        child = node->getLeft();
+    } else {
+        child = node->getRight();
+    }    
     if (child != nullptr) {
         child->setParent(node->getParent());
     }
@@ -561,15 +571,16 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::clear()
 {
     // TODO
-    clearNode(root_);
+    clearHelper(root_);
     root_ = nullptr;
 }
 
+// helper clear function
 template <typename Key, typename Value>
-void BinarySearchTree<Key, Value>::clearNode(Node<Key, Value>* node) {
+void BinarySearchTree<Key, Value>::clearHelper(Node<Key, Value>* node) {
     if (node) {
-        clearNode(node->getLeft());
-        clearNode(node->getRight());
+        clearHelper(node->getLeft());
+        clearHelper(node->getRight());
         delete node;
     }
 }
@@ -618,18 +629,26 @@ template<typename Key, typename Value>
 bool BinarySearchTree<Key, Value>::isBalanced() const
 {
     // TODO
-    return checkBalance(root_) != -1;
+    return balanceHelper(root_) != -1;
 }
 
+// helper balance function
 template<typename Key, typename Value>
-int BinarySearchTree<Key, Value>::checkBalance(Node<Key, Value>* node) const {
+int BinarySearchTree<Key, Value>::balanceHelper(Node<Key, Value>* node) const {
     if (!node) return 0;
-    int leftHeight = checkBalance(node->getLeft());
-    int rightHeight = checkBalance(node->getRight());
+    int leftHeight = balanceHelper(node->getLeft());
+    int rightHeight = balanceHelper(node->getRight());
     if (leftHeight == -1 || rightHeight == -1 || std::abs(leftHeight - rightHeight) > 1) {
         return -1; // Unbalanced
     }
-    return 1 + ((leftHeight > rightHeight) ? leftHeight : rightHeight);
+    int maxHeight;
+    if (leftHeight > rightHeight) {
+        maxHeight = leftHeight;
+    } else {
+        maxHeight = rightHeight;
+    }
+
+    return 1 + maxHeight;
 }
 
 

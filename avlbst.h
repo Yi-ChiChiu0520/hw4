@@ -185,6 +185,7 @@ void AVLTree<Key, Value>::remove(const Key& key) {
 
     // Rebalance from the parent of the removed node
     rebalance(static_cast<AVLNode<Key, Value>*>(node->getParent()));
+    delete node; 
 }
 
 template<class Key, class Value>
@@ -299,4 +300,4 @@ void AVLTree<Key, Value>::rebalance(AVLNode<Key, Value>* node) {
 
 
 
-#endif
+#endif 
