@@ -542,7 +542,7 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
     // TODO
     if (current == nullptr) return nullptr;
 
-    // If the current node has a left child, the predecessor is the rightmost node of the left subtree.
+    // if node has a left child, predecessor is the rightmost node of the left subtree.
     if (current->getLeft() != nullptr) {
         Node<Key, Value>* pred = current->getLeft();
         while (pred->getRight() != nullptr) {
@@ -550,7 +550,7 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
         }
         return pred;
     } 
-    // If the current node has no left child, the predecessor is its lowest ancestor for which the current node would be in the right subtree.
+    // if node doesn't have a left child,  predecessor is the leftmost node of the right subtree
     else {
         Node<Key, Value>* ancestor = current->getParent();
         Node<Key, Value>* child = current;
